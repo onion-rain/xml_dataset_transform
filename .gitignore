@@ -1,0 +1,5 @@
+*.jpg
+*.xml
+*.tar
+raw/
+HorizontalFlip/
