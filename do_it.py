@@ -9,11 +9,11 @@ import random
 from test import *
 from transforms import *
 
-raw_img_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/raw/train-data/"
-raw_label_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/raw/object-detect-4Ks45fTUAnTRgL5kxIG/annotation/V006/annotations/"
+raw_img_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/raw_dataset/"
+raw_label_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/raw_dataset/"
 
-# new_dataset_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/HorizontalFlip/"
-new_dataset_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/test/"
+new_dataset_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/HorizontalFlip/"
+# new_dataset_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/test/"
 
 prefix = new_dataset_root.split("/")[-2]+"_"
 
@@ -29,7 +29,7 @@ def read_xml_root_node(xml_path):
     root = dom.documentElement
     return root
 
-def do_it(t, raw_img_root, raw_label_root, new_dataset_root, prefix):
+def do_it(t, raw_img_root, raw_label_root, new_dataset_root, prefix, draw=False):
     dirs = os.listdir(raw_img_root)
     pbar = tqdm(
         dirs,
@@ -71,16 +71,17 @@ def do_it(t, raw_img_root, raw_label_root, new_dataset_root, prefix):
 
             # 根据transform修改bbox
             bbox = t.label_transform(img_width, bbox)
-            bndbox.getElementsByTagName('xmin')[0].childNodes[0].nodeValue = bbox[0]
-            bndbox.getElementsByTagName('ymin')[0].childNodes[0].nodeValue = bbox[1]
-            bndbox.getElementsByTagName('xmax')[0].childNodes[0].nodeValue = bbox[2]
-            bndbox.getElementsByTagName('ymax')[0].childNodes[0].nodeValue = bbox[3]
-
-        # # test draw
-        # draw(img, bboxes, new_img_path)
+            bndbox.getElementsByTagName('xmin')[0].childNodes[0].nodeValue = min(bbox[0], bbox[2])
+            bndbox.getElementsByTagName('ymin')[0].childNodes[0].nodeValue = min(bbox[1], bbox[3])
+            bndbox.getElementsByTagName('xmax')[0].childNodes[0].nodeValue = max(bbox[0], bbox[2])
+            bndbox.getElementsByTagName('ymax')[0].childNodes[0].nodeValue = max(bbox[1], bbox[3])
 
         with open(new_label_path, "w+", encoding="utf-8") as f:
             annotation_node.writexml(f)
+
+        # test draw
+        if draw:
+            draw(img, bboxes, new_img_path)
 
 if __name__ == "__main__":
     t = HorizontalFlip()

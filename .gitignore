@@ -3,3 +3,5 @@
 *.tar
 raw/
 HorizontalFlip/
+__pycache__/
+*.pyc
