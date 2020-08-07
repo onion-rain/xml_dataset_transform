@@ -12,8 +12,8 @@ from transforms import *
 raw_img_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/raw_dataset/"
 raw_label_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/raw_dataset/"
 
-new_dataset_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/HorizontalFlip/"
-# new_dataset_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/test/"
+# new_dataset_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/HorizontalFlip/"
+new_dataset_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/test/"
 
 prefix = new_dataset_root.split("/")[-2]+"_"
 
@@ -29,7 +29,7 @@ def read_xml_root_node(xml_path):
     root = dom.documentElement
     return root
 
-def do_it(t, raw_img_root, raw_label_root, new_dataset_root, prefix, draw=False):
+def do_it(t, raw_img_root, raw_label_root, new_dataset_root, prefix, draw_flag=False):
     dirs = os.listdir(raw_img_root)
     pbar = tqdm(
         dirs,
@@ -44,7 +44,7 @@ def do_it(t, raw_img_root, raw_label_root, new_dataset_root, prefix, draw=False)
         raw_label_path = raw_label_root+name+".xml"
         new_label_path = new_dataset_root+prefix+name+".xml"
 
-        t.img_transform(raw_img_path, new_img_path)
+        img = t.img_transform(raw_img_path, new_img_path)
 
         annotation_node = read_xml_root_node(raw_label_path)
         
@@ -61,6 +61,7 @@ def do_it(t, raw_img_root, raw_label_root, new_dataset_root, prefix, draw=False)
         for idx in range(len(objects)):
             object = objects[idx]
             bndbox = object.getElementsByTagName('bndbox')[0]
+            name = object.getElementsByTagName('name')[0].childNodes[0].nodeValue
 
             # bbox以及label保存到list
             bbox = [int(bndbox.getElementsByTagName('xmin')[0].childNodes[0].nodeValue), 
@@ -76,11 +77,21 @@ def do_it(t, raw_img_root, raw_label_root, new_dataset_root, prefix, draw=False)
             bndbox.getElementsByTagName('xmax')[0].childNodes[0].nodeValue = max(bbox[0], bbox[2])
             bndbox.getElementsByTagName('ymax')[0].childNodes[0].nodeValue = max(bbox[1], bbox[3])
 
+            # bbox以及label保存到list
+            show_bbox = [int(bndbox.getElementsByTagName('xmin')[0].childNodes[0].nodeValue), 
+                        int(bndbox.getElementsByTagName('ymin')[0].childNodes[0].nodeValue), 
+                        int(bndbox.getElementsByTagName('xmax')[0].childNodes[0].nodeValue), 
+                        int(bndbox.getElementsByTagName('ymax')[0].childNodes[0].nodeValue),
+                        name]
+            bboxes.append(show_bbox)
+
         with open(new_label_path, "w+", encoding="utf-8") as f:
             annotation_node.writexml(f)
 
+        t.img_transform_2(raw_img_path, new_img_path, bboxes)
+
         # test draw
-        if draw:
+        if draw_flag:
             draw(img, bboxes, new_img_path)
 
 if __name__ == "__main__":
@@ -88,4 +99,4 @@ if __name__ == "__main__":
 
     check_and_clear(new_dataset_root)
 
-    do_it(t, raw_img_root, raw_label_root, new_dataset_root, prefix)
+    do_it(t, raw_img_root, raw_label_root, new_dataset_root, prefix, draw_flag=False)

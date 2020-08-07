@@ -1,7 +1,8 @@
 *.jpg
 *.xml
 *.tar
-raw/
+raw_dataset/
 HorizontalFlip/
+test/
 __pycache__/
 *.pyc

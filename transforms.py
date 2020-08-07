@@ -7,7 +7,7 @@ from PIL import Image
 
 from torchtoolbox.transform import Cutout
 
-__all__ = ["HorizontalFlip", "CutOut", "CutOut", "CutMix", "Mosai"]
+__all__ = ["HorizontalFlip", "CutOut", "CutOut", "MixUp", "CutMix", "Mosai"]
 
 class HorizontalFlip(object):
     """随机水平翻转"""
@@ -15,8 +15,9 @@ class HorizontalFlip(object):
         img = transforms.ToTensor()(Image.open(raw_img_path))
         img = torch.flip(img, [-1])
         vutils.save_image(img, new_img_path)
+        return img
 
-    def img_transform_2(self, raw_img_path, new_img_path, bbox):
+    def img_transform_2(self, raw_img_path, new_img_path, bboxes):
         pass
 
     def label_transform(self, img_width, bbox):
@@ -39,7 +40,7 @@ class CutOut(object):
     def img_transform(self, raw_img_path, new_img_path):
         pass
 
-    def img_transform_2(self, raw_img_path, new_img_path, bbox):
+    def img_transform_2(self, raw_img_path, new_img_path, bboxes):
         """置label_transform之后之后"""
         img = transforms.ToTensor()(Image.open(raw_img_path))
         vutils.save_image(img, new_img_path)
@@ -121,15 +122,16 @@ class MixUp(object):
     TODO 两张图片按比例混合
     args:
         p(float): 混合比例"""
-    def __init__(self, p=0.1):
+    def __init__(self, p=0.5):
         self.p = p
 
-    def __call__(self, imgs, targets):
-
-        return img, targets
-
-    def __repr__(self):
-        return self.__class__.__name__ + '(p={0})'.format(self.p)
+    def img_transform(self, raw_img1_path, raw_img2_path, new_img_path):
+        img1 = transforms.ToTensor()(Image.open(raw_img1_path))
+        img2 = transforms.ToTensor()(Image.open(raw_img2_path))
+        new_img = img1*self.p + img2*self.p
+        vutils.save_image(new_img, new_img_path)
+        return new_img
+    
 
 class CutMix(object):
     """
