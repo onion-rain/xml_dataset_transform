@@ -4,6 +4,8 @@ import torch.nn.functional as F
 import torchvision.transforms as transforms
 from torchvision import utils as vutils
 from PIL import Image
+import random
+import cv2
 
 from torchtoolbox.transform import Cutout
 
@@ -25,6 +27,33 @@ class HorizontalFlip(object):
         bbox[2] = img_width - bbox[2]
         return bbox
         
+def _is_numpy_image(img):
+    return img.ndim in {2, 3}
+
+def cutout(img, i, j, h, w, v, inplace=False):
+    """ Erase the CV Image with given value.
+
+    Args:
+        img (Tensor Image): Tensor image of size (C, H, W) to be erased
+        i (int): i in (i,j) i.e coordinates of the upper left corner.
+        j (int): j in (i,j) i.e coordinates of the upper left corner.
+        h (int): Height of the erased region.
+        w (int): Width of the erased region.
+        v: Erasing value.
+        inplace(bool, optional): For in-place operations. By default is set False.
+
+    Returns:
+        CV Image: Cutout image.
+    """
+    if not _is_numpy_image(img):
+        raise TypeError('img should be CV Image. Got {}'.format(type(img)))
+
+    if not inplace:
+        img = img.copy()
+
+    img[i:i + h, j:j + w, :] = v
+    return img
+
 
 class CutOut(object):
     """
@@ -32,21 +61,45 @@ class CutOut(object):
     args:
         pad(int): 0为填充0，1为填充随机噪声
     """
-    def __init__(self, pad=0, w=200, h=100):
-        self.pad = pad
-        self.w = w
-        self.h = h
+    def __init__(self, pixel_level=True, value=(0, 255)):
+        self.pixel_level = pixel_level
+        self.value = value
 
     def img_transform(self, raw_img_path, new_img_path):
         pass
 
     def img_transform_2(self, raw_img_path, new_img_path, bboxes):
         """置label_transform之后之后"""
-        img = transforms.ToTensor()(Image.open(raw_img_path))
-        vutils.save_image(img, new_img_path)
+        img = cv2.imread(raw_img_path)
+        img_h = img.shape[0]
+        img_w = img.shape[1]
+        img_c = img.shape[2]
+        # bbox_sizes = []
+        for bbox in bboxes:  # bbox[xyxy]
+            bbox_w = bbox[2] - bbox[0]
+            bbox_h = bbox[3] - bbox[1]
 
-    def label_transform(self, img_width, bbox):
-        return bbox
+            pad_w = random.randint(int(bbox_w/3), int(bbox_w*4/5))
+            pad_h = random.randint(int(bbox_h/3), int(bbox_h*4/5))
+            
+            pad_left_min = np.clip(bbox[0]-pad_w+int(bbox_w*0.4), 0, img_w-pad_w)
+            pad_top_min  = np.clip(bbox[1]-pad_h+int(bbox_h*0.4), 0, img_h-pad_h)
+            pad_left_max = np.clip(bbox[2]-int(bbox_w*0.4), 0, img_w-pad_w)
+            pad_top_max  = np.clip(bbox[3]-int(bbox_h*0.4), 0, img_h-pad_h)
+
+            left = random.randint(pad_left_min, pad_left_max)
+            top = random.randint(pad_top_min, pad_top_max)
+            # bbox_sizes.append([bbox_w, bbox_h])
+
+            if self.pixel_level:
+                pad = np.random.randint(*self.value, size=(pad_h, pad_w, img_c))
+            else:
+                pad = random.randint(*self.value)
+
+            cutout(img, top, left, pad_h, pad_w, pad, inplace=True)
+            
+        cv2.imwrite(new_img_path, img)
+        return img
 
         
 class Cutout(object):

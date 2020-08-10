@@ -1,8 +1,34 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.ticker import NullLocator
+import cv2
 
 __all__ = ["draw"]
+
+# def draw(img, detections, save_path):
+#     """
+#     cv画图
+#     args:
+#         detections: (x, y, x, y, cls_pred), 单位为像素，
+#             注意：x, y为方框中心坐标"""
+#     if detections is not None:
+#         text_font = cv2.FONT_HERSHEY_SIMPLEX
+#         font_scale = 0.7
+#         thickness = 2
+#         for idx, (x1, y1, x2, y2, cls_pred) in enumerate(detections):
+#             x1 = int(x1)
+#             y1 = int(y1)
+#             x2 = int(x2)
+#             y2 = int(y2)
+#             # cls_pred = int(cls_pred)
+#             cv2.rectangle(img, (x1, y1), (x2, y2), [230, 230, 51], thickness)
+#             cv2.putText(img, cls_pred, (x1, y1-4),
+#                         text_font, font_scale, bbox_colors[idx], thickness)
+
+#         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+#         cv2.imwrite(save_path , img)
+
+    # return img
 
 def draw(img, detections, save_path):
     """
