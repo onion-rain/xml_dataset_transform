@@ -9,10 +9,12 @@ import random
 from test import *
 from transforms import *
 
-raw_img_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/raw_dataset/"
-raw_label_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/raw_dataset/"
+root = "raw3/"
 
-new_dataset_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/MixUp/"
+raw_img_root = root + "raw_dataset/"
+raw_label_root = root + "raw_dataset/"
+
+new_dataset_root = root + "MixUp/"
 # new_dataset_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/test/"
 
 prefix = new_dataset_root.split("/")[-2]+"_"
@@ -30,7 +32,8 @@ def read_xml_root_node(xml_path):
     return root
 
 def do_it(t, raw_img_root, raw_label_root, new_dataset_root, prefix, draw_flag=False):
-    dirs = os.listdir(raw_img_root)
+    dirs = os.listdir(raw_img_root) # 此处应筛选.jpg结尾，但为了对照实验准确，暂时将错就错吧
+    # dirs = [dir for dir in dirs if dir.endswith(".jpg")]
     dirs1 = dirs[:int(len(dirs)/2)-1]
     dirs2 = dirs[int(len(dirs)/2):]
     pbar = tqdm(

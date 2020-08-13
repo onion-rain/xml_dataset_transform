@@ -10,11 +10,13 @@ import torchvision.transforms as transforms
 from test import *
 from transforms import *
 
-raw_img_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/raw_dataset/"
-raw_label_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/raw_dataset/"
+root = "raw3/"
 
-# new_dataset_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/CutOut/"
-new_dataset_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/test/"
+raw_img_root = root + "raw_dataset/"
+raw_label_root = root + "raw_dataset/"
+
+new_dataset_root = root + "CutOut/"
+# new_dataset_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/test/"
 
 prefix = new_dataset_root.split("/")[-2]+"_"
 
@@ -32,6 +34,7 @@ def read_xml_root_node(xml_path):
 
 def do_it(t, raw_img_root, raw_label_root, new_dataset_root, prefix, draw_flag=False):
     dirs = os.listdir(raw_img_root)
+    dirs = [dir for dir in dirs if dir.endswith(".jpg")]
     pbar = tqdm(
         dirs,
         desc="transforming",
