@@ -9,7 +9,7 @@ import random
 from test import *
 from transforms import *
 
-root = "raw3/"
+root = "raw0/"
 
 raw_img_root = root + "raw_dataset/"
 raw_label_root = root + "raw_dataset/"
@@ -69,7 +69,6 @@ def do_it(t, raw_img_root, raw_label_root, new_dataset_root, prefix, draw_flag=F
             
         objects_new = annotation_node_new.getElementsByTagName('object')
 
-        
         bboxes = []
         for idx in range(len(objects_new)):
             object = objects_new[idx]
