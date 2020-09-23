@@ -10,10 +10,10 @@ import torchvision.transforms as transforms
 from test import *
 from transforms import *
 
-root = "raw0/"
+root = "raw4/"
 
-raw_img_root = root + "raw_dataset/"
-raw_label_root = root + "raw_dataset/"
+raw_img_root = root + "sidewalk/"
+raw_label_root = root + "sidewalk/"
 
 new_dataset_root = root + "CutOut/"
 # new_dataset_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/test/"

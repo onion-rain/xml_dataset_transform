@@ -9,10 +9,10 @@ import random
 from test import *
 from transforms import *
 
-root = "raw0/"
+root = "raw4/"
 
-raw_img_root = root + "raw_dataset/"
-raw_label_root = root + "raw_dataset/"
+raw_img_root = root + "sidewalk/"
+raw_label_root = root + "sidewalk/"
 
 new_dataset_root = root + "HorizontalFlip/"
 # new_dataset_root = "/home/xueruini/onion_rain/pytorch/xml_dataset_transform/test/"
@@ -34,7 +34,8 @@ def read_xml_root_node(xml_path):
 def do_it(t, raw_img_root, raw_label_root, new_dataset_root, prefix, draw_flag=False):
     dirs = os.listdir(raw_img_root)
     dirs = [dir for dir in dirs if dir.endswith(".jpg")]
-    sample_ids = random.sample(dirs, 1000)
+    # sample_ids = random.sample(dirs, 1000)
+    sample_ids = dirs
     pbar = tqdm(
         sample_ids,
         desc="transforming",
@@ -103,4 +104,4 @@ if __name__ == "__main__":
 
     check_and_clear(new_dataset_root)
 
-    do_it(t, raw_img_root, raw_label_root, new_dataset_root, prefix, draw_flag=False)
+    do_it(t, raw_img_root, raw_label_root, new_dataset_root, prefix, draw_flag=True)

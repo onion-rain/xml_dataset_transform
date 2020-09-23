@@ -10,7 +10,7 @@ import copy
 from test import *
 from transforms import *
 
-root = "raw1/"
+root = "raw4/"
 
 raw_img_root = root + "raw_dataset/"
 raw_label_root = root + "raw_dataset/"

@@ -9,7 +9,7 @@ import random
 from test import *
 from transforms import *
 
-root = "raw0/"
+root = "raw3/"
 
 raw_img_root = root + "raw_dataset/"
 raw_label_root = root + "raw_dataset/"
